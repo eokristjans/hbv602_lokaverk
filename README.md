@@ -38,5 +38,7 @@ heroku git:remote -a vef2-v3-eok4
 # Push just a subtree (the original webapp) to heroku
 git subtree push --prefix Atvinnuumsoknir0 heroku master
 
+# See https://medium.com/@shalandy/deploy-git-subdirectory-to-heroku-ea05e95fce1f for more details
+
 # TODO: decide how and if to push .env file to heroku
 ```
