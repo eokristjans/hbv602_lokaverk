@@ -7,6 +7,13 @@
 
 require('dotenv').config();
 
+const {
+  // Sækir upplýsingar í .env ef þær eru skilgreindar.
+  HOST: hostname = '127.0.0.1',
+  PORT: port = 3000,
+  SESSION_SECRET: sessionSecret = 'leyndó',
+} = process.env;
+
 const path = require('path');
 const express = require('express');
 const session = require('express-session'); // v3
@@ -21,7 +28,6 @@ const users = require('./DAOs/users'); // v3 - being used but not as middleware
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
 
-const sessionSecret = process.env.SESSION_SECRET; // v3
 
 const app = express();
 
@@ -241,9 +247,6 @@ app.use(errorHandler);
 
 
 /********** LISTEN MUST BE AT THE ABSOLUTE BOTTOM **********/
-
-const hostname = '127.0.0.1';
-const port = 3000;
 
 app.listen(port, hostname, () => {
   console.info(`Server running at http://${hostname}:${port}/`);
