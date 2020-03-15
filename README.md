@@ -40,7 +40,6 @@ git subtree push --prefix Atvinnuumsoknir0 heroku master
 
 # See https://medium.com/@shalandy/deploy-git-subdirectory-to-heroku-ea05e95fce1f for more details
 
-# TODO: decide how and if to push .env file to heroku
 
 # Setja upp gagnagrunn á heroku
 heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
