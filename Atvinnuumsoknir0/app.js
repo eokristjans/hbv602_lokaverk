@@ -248,6 +248,7 @@ app.use(errorHandler);
 
 /********** LISTEN MUST BE AT THE ABSOLUTE BOTTOM **********/
 
-app.listen(port, hostname, () => {
+app.listen(port, () => {
+  // Does not listen on any specific hostname on heroku.
   console.info(`Server running at http://${hostname}:${port}/`);
 });

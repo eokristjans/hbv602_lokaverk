@@ -42,5 +42,8 @@ git subtree push --prefix Atvinnuumsoknir0 heroku master
 
 # TODO: decide how and if to push .env file to heroku
 
-heroku addons:create heroku-postgresql:v3 -a vef2-v3-eok4
+# Setja upp gagnagrunn á heroku
+heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
+
+# Halda utan um logging til lengri tíma með heroku resource: Papertrail
 ```
