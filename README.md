@@ -46,4 +46,7 @@ git subtree push --prefix Atvinnuumsoknir0 heroku master
 heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
 
 # Halda utan um logging til lengri tíma með heroku resource: Papertrail
+
+# Keyra setup á heroku
+heroku run node setup/setup.js
 ```
