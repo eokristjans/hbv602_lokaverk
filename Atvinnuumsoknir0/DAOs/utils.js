@@ -1,3 +1,5 @@
+// v3 Contains a few functions that are used by many routers
+
 const xss = require('xss');
 
 /**

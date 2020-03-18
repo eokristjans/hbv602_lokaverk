@@ -13,6 +13,7 @@ const {
 
 const path = require('path');
 const express = require('express');
+const { sanitize } = require('express-validator');
 const session = require('express-session'); // v3
 const passport = require('passport'); // v3
 
@@ -28,6 +29,7 @@ const {
   catchErrors,
   ensureLoggedIn,
   ensureNotLoggedIn,
+  sanitizeXss,
 } = require('./DAOs/utils'); // v3
 
 
@@ -119,6 +121,17 @@ app.use((req, res, next) => {
 
 /****************************** LOGIN FUNCTIONALITY ***************************/
 
+// Fylki af öllum hreinsunum fyrir innskráningu notenda
+const sanitazions = [
+  // .escape() passar að ekkert HTML fari með.
+  sanitize('username').escape(),
+  sanitizeXss('username'),
+
+  sanitize('password').escape(),
+  sanitizeXss('password'),
+
+];
+
 /** v3
  * Login Form
  * 
@@ -126,26 +139,26 @@ app.use((req, res, next) => {
  * @param {object} res Response hlutur
  */
 app.get('/login', ensureNotLoggedIn, (req, res) => {
-  const data = {
-    title: 'Innskráning', // Ekki í notkun eins og er
-    username: 'admin', // current default
-    password: 'asdfasdf', // current default
-    errors: [],
-  };
 
   // v3 setjum current page (betra væri ef þetta væri aðgerð aðgengileg öllum)
   res.locals.page = 'login';
 
-  let message = '';
-
   // Athugum hvort einhver skilaboð séu til í session, ef svo er birtum þau og hreinsum skilaboð
+  let message = '';
   if (req.session.messages && req.session.messages.length > 0) {
     message = req.session.messages.join(', ');
     req.session.messages = [];
   }
 
-  // TODO: Senda Message með (bæta því við data eða láta ejs sækja það úr req.session.messages?)
-  res.render('loginForm', data);
+  const data = {
+    title: 'Innskráning', // Ekki í notkun eins og er
+    username: 'admin', // current default
+    password: 'asdfasdf', // current default
+    errors: [],
+    message: message,
+  };
+
+  return res.render('loginForm', data);
 });
 
 
