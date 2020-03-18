@@ -4,7 +4,7 @@ const xss = require('xss');
 const { check, validationResult } = require('express-validator');
 const { sanitize } = require('express-validator');
 
-const users = require('../DAOs/users'); // v3 - being used but not as middleware
+const usersFunctions = require('../DAOs/users-functions'); // v3 - being used but not as middleware
 
 
 
@@ -179,7 +179,7 @@ async function formPost(req, res) {
     } = {},
   } = req;
 
-  await users.createUser(nafn, netfang, username, password);
+  await usersFunctions.createUser(nafn, netfang, username, password);
   
   return res.redirect('/register/thanks');
 }

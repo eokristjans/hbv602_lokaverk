@@ -1,8 +1,6 @@
 // v2 TILBÚIÐ.
 
-// v3 TODO: Færa login o.fl. yfir í nýja skrá, utils.js
 // TODO: Login Validation & Sanitazion
-// TODO: Setja á heroku?
 
 
 require('dotenv').config();
@@ -19,14 +17,14 @@ const express = require('express');
 const session = require('express-session'); // v3
 const passport = require('passport'); // v3
 
+// Strategy um hvernig við ætlum að nálgast og eiga við notendur
+const { Strategy } = require('passport-local'); // v3
+
 const apply = require('./routes/apply');
 const applications = require('./routes/applications');
 const register = require('./routes/register'); // v3
 const usersPage = require('./routes/users'); // v3
-const users = require('./DAOs/users'); // v3 - being used but not as middleware
-
-// Strategy um hvernig við ætlum að nálgast og eiga við notendur
-const { Strategy } = require('passport-local'); // v3
+const usersFunctions = require('./DAOs/users-functions'); // v3 - being used but not as middleware
 
 
 const app = express();
@@ -37,8 +35,10 @@ app.set('view engine', 'ejs');
 // Erum að vinna með form, verðum að nota body parser til að fá aðgang að req.body
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
 
+
+/************************* PASSPORT & SESSION SETTINGS ************************/
 
 if (!sessionSecret) { // v3
   console.error('Add SESSION_SECRET to .env');
@@ -50,10 +50,8 @@ app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  maxAge: 20 * 1000, // 20 sek. TODO: Increase?
+  maxAge: 30 * 24 * 60 * 1000, // 30 dagar
 }));
-
-
 
 /** v3
  * Athugar hvort username og password sé til í notandakerfi.
@@ -67,7 +65,7 @@ app.use(session({
  */
 async function strat(username, password, done) {
   try {
-    const user = await users.findByUsername(username);
+    const user = await usersFunctions.findByUsername(username);
 
     // Er notandi til?
     if (!user) {
@@ -75,7 +73,7 @@ async function strat(username, password, done) {
     }
 
     // Verður annað hvort notanda hlutur ef lykilorð rétt, eða false
-    const result = await users.comparePasswords(password, user);
+    const result = await usersFunctions.comparePasswords(password, user);
     return done(null, result);
   } catch (err) {
     console.error(err);
@@ -94,7 +92,7 @@ passport.serializeUser((user, done) => {
 // v3 Sækir notanda út frá id
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await users.findById(id);
+    const user = await usersFunctions.findById(id);
     done(null, user);
   } catch (err) {
     done(err);
@@ -114,6 +112,9 @@ app.use((req, res, next) => {
 
   next();
 });
+
+
+/****************************** LOGIN & REGISTER ***************************/
 
 // v3 Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
 // þá áfram, annars sendir á /login
@@ -137,7 +138,6 @@ function ensureNotLoggedIn(req, res, next) {
   return next();
 }
 
-
 /** v3
  * Login Form
  * 
@@ -152,13 +152,8 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
     errors: [],
   };
 
-
-  // v3 setjum current page (betra ef þetta væri aðgerð aðgengileg öllum)
+  // v3 setjum current page (betra væri ef þetta væri aðgerð aðgengileg öllum)
   res.locals.page = 'login';
-
-
-
-  if (req.isAuthenticated()) {  return res.redirect('/'); }
 
   let message = '';
 
@@ -180,8 +175,9 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
  * @param {object} res Response hlutur
  */
 app.post(
-  '/login',
-
+  '/login', 
+  ensureNotLoggedIn,
+  
   // Þetta notar strat að ofan til að skrá notanda inn
   passport.authenticate('local', {
     failureMessage: 'Notandi eða lykilorð vitlaust.',
@@ -201,20 +197,22 @@ app.post(
  * @param {object} req Request hlutur
  * @param {object} res Response hlutur
  */
-app.get('/logout', ensureLoggedIn, (req, res) => {
-  req.logout(); // Passport method
-  res.redirect('/');
-});
+app.get(
+  '/logout', 
+  ensureLoggedIn, 
+  (req, res) => {
+    req.logout(); // Passport method
+    res.redirect('/');
+  },
+);
 
 
+/******************** USE IMPORTED ROUTERS ********************/
 
 app.use('/', apply);
 app.use('/register', ensureNotLoggedIn, register); // v3
 app.use('/applications', ensureLoggedIn, applications);
 app.use('/users', ensureLoggedIn, usersPage); // v3
-
-
-
 
 
 /********** ERROR HANDLING MUST BE BELOW OTHER MIDDLEWARE **********/
