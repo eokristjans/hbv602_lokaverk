@@ -1,70 +1,8 @@
-# Verkefni 2 & 3
-
-## TODO: Uppfæra með lýsingu að verkefni 3.
+# Lýsing á verkefnum 2 & 3 í Vefforritun 2
 
 Verkefni 2 snýst um að setja upp vef sem bíður upp á senda inn atvinnuumsóknir ásamt síðu sem listar upp allar umsóknir.
 
 Verkefni 3 byggir á verkefni 2 og bætir við notendaumsjón með nýskráningu og meðhöndlun á notendum.
-
-
-## Glosur
-
-```bash
-npm install
-npm install --save pg express-validator ejs xss 
-npm install --save bcrypt cookie-parser express-session passport passport-local
-nodemon app.js
-```
-
-_setup.js_ notar `connectionString = process.env.DATABASE_URL` sem er tómi strengurinn
-þar til annað hefur verið skráð. Tómi strengurinn -> Default value -> Notendanafn -> Erling.
-
-Afritum texta úr _.env\_example_ í _.env_ og breytum `DATABASE_URL=postgres://:@localhost/v2`
-í `DATABASE_URL=postgres://notandi:mypass@localhost/v2`.
-
-Fylgja eftirfarandi [postgres ítarefni](https://github.com/vefforritun/vef2-2019/blob/master/itarefni/postgres.md).
-
-Keyrum `npm run setup`.
-
-Hægt að tengjast í skel með `psql -U notandi -d v2`
-
-Lenti í smá veseni með að sýna íslenska stafi í PSQL, þurfti að keyra eftirfarandi í CMD:
-
-```bash
-SET PGCLIENTENCODING=utf-8
-chcp 65001
-```
-
-Setjum upp töflu í _schema.sql_.
-
-Búum til sýnigögn í _insert.sql_.
-
-Vinnum aðallega með _app.js_.
-
-Búum til _index.ejs_ skrá undir _/views_. Bætum inn form.
-
-Gott að geyma í _app.js_ stillingar á appi, villumeðhöndlanir, middleware o.fl.
-
-Bætum `app.use(apply);` í _app.js_. Búum til skránna _apply.js_ og importum hana í _app.js_.
-
-Template _index.ejs_ á ekki að sjá um neina lógík. Öll lógík fer fram í middleware, hér í _apply.js_.
-
-Bætum `app.use(express.urlencoded({ extended: true }));` í _app.js_ til að geta unnið með body-ið.
-
-Búum til _views/error.ejs_ til að geta birt error.
-
-Klárum register POST í _register.js_.
-
-Búum til validation og sanitazion fylki í _register.js_, því milliware getur verið hlaðið úr fylkjum eins og í fyrirlestri 3 Form, dæmi 09.
-
-Búum til þakkarsíðu _views/thanks.ejs_ samhliða register post úrvinnslu.
-
-Bætum við möguleika á að vista gögn í gagnagrunn eftir að þau hafa verið POST-uð.
-
-Þurfum pg, connectionString og client í _register.js_. 
-
-Útfærum það í _db.js_ og sækjum með `require`.
-
 
 ## Útlit
 
@@ -81,6 +19,41 @@ Bætum við möguleika á að vista gögn í gagnagrunn eftir að þau hafa veri
   * Border á input `#888`
   * Border ef input ef ógilt `#855`, bakgrunnur `#fbb`
   * Bakgrunnur á takka þegar sveimað yfir `#bbb`, skipt með `easin-in` á `300ms`
+
+## Notendaumsjón
+
+Útfæra skal notendaumsjón með [`passport.js`](http://www.passportjs.org/), [`passport-local`](https://github.com/jaredhanson/passport-local) og [`express-session`](https://github.com/expressjs/session).
+
+Fyrir `express-session` skal skrá `sessionSecret` og skal það vera sótt úr `.env`, sjá gefin kóða í `app.js`.
+
+Setja skal upp innskráningu á `/login` sem flettir upp notanda í gagngagrunni og skráir inn ef til og rétt lykilorð er gefið.
+
+Setja skal upp notendaskráningu á `/register` sem leyfir notanda að skrá sig. Fyrir notanda skal skrá og uppfylla:
+
+* Nafn
+  * Má ekki vera tómt
+* Netfang
+  * Má ekki vera tómt, verður að vera netfang
+  * Normalísera sem netfang
+* Notendanafn
+  * Má ekki vera tómt
+  * Má ekki vera til nú þegar (fletta verður upp í notendagrunni)
+* Lykilorð
+  * Verður að vera a.m.k. 8 stafir
+  * Verður að vera staðfest (þ.e.a.s. tveir lykilorða reitir)
+
+Eftir skráningu skal senda á þakkarsíðu sem bíður notanda upp á að skrá sig inn.
+
+Nota skal [`bcrypt`](https://github.com/kelektiv/node.bcrypt.js) fyrir geymslu lykilorða. Ekki skal geyma lykilorðin sjálf sem texta neinstaðar.
+
+Eftir innskráningu mega notendur skoða umsóknir, ef reynt er að skoða umsóknir án þess að vera innskráður notandi er notandi sendur á `/login`.
+
+Á umsóknarsíðu mega þeir notendur sem eru `admin` (boolean gildi geymt á notanda) eyða umsókn. Allir notendur mega „vinna umsókn“.
+
+Ný síða sýnir alla notendur á `/admin`. Notendanöfn, nöfn og netföng eru sýnd. Ef notandi er `admin` má viðkomandi breyta `admin` stöðu allra notanda. Það er gert með því að haka í checkbox og senda form. Athugið að hægt er að fá fylki af gildum til baka úr formi með því að gefa þeim `name` sem endar á `[]`, t.d. `name="admin[]"`. Eftir að notendur eru uppfærðir er farið aftur á `/admin`. Þessa virkni skal útfæra í `admin.js`.
+
+Í minni skjám skal notendaumsjónarsíða sýna töflu með láréttri skrunstiku, sjá skjáskot.
+
 
 ## Gagnagrunnur
 
@@ -109,10 +82,22 @@ _CRUD_ virkni fyrir verkefni skal setja upp í `db.js`.
 Nafn | Netfang | Sími | Texti | Starf | Unnin?
 -----|---------|------|-------|-------|-------
 Jón Jónsson | jon@example.org | 1231231 | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut bibendum eleifend odio, eu laoreet sapien sollicitudin quis. | forritari | Nei
-Guðmundur Guðmundsson | gummi@example.org | 1233211 | Nam a sapien tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus tincidunt ante nisl, eu placerat arcu porttitor mollis. Duis porttitor dolor vitae aliquet sollicitudin. Etiam scelerisque, lorem eu varius eleifend, elit diam facilisis leo, sit amet volutpat est enim eu tortor. Mauris non tortor eget nibh fermentum maximus vel sit amet ante. Vestibulum condimentum facilisis nisl eget interdum. Donec vel cursus purus. | forritari | Já
-Anna Önnudóttir | anna@example.org | 3333333 | Sed in sem sagittis, fringilla justo eget, vulputate nunc. Cras pharetra faucibus blandit. Sed non porta ligula, non efficitur dolor. | forritari | Nei
-Guðmunda Guðmundsdóttir | gudmunda@example.org | 1111111 | Aenean a nibh a enim cursus bibendum. Donec dictum velit in odio feugiat imperdiet. Sed blandit, justo vitae lacinia efficitur, tortor ante ultrices orci, nec placerat dui purus ac augue. Nullam aliquet purus sit amet erat laoreet, nec consequat augue suscipit. Curabitur rutrum pretium erat sed pellentesque. Proin ligula massa, varius id tristique in, varius id elit. Sed congue volutpat fringilla. | hönnuður | Nei
-John Johnson | john@example.org | 1000000 | Etiam accumsan neque nec mauris fringilla, id dignissim tortor maximus. Proin sit amet sodales felis. Vivamus ut est magna. Quisque porta quam ac orci dignissim convallis. Nunc efficitur sagittis felis at gravida. Praesent quis quam molestie, rutrum mi sed, malesuada nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse felis tortor, imperdiet in metus eget, bibendum aliquet nisl. | verkefnastjóri | Nei
+John Johnson | john@example.org | 1000000 | Etiam accumsan neque nec mauris fringilla, id dignissim tortor maximus. Proin sit amet sodales felis. Vivamus ut est magna. Quisque porta quam ac orci dignissim convallis. Nunc efficitur sagittis felis at gravida. | verkefnastjóri | Nei
+
+*Fjarlægði 3 notendur til að minnka töflu því þessar upplýsingar skipta ekki höfuð máli.*
+
+Leyfilegt er að setja upp virkni fyrir notendur í annari skrá en `db.js`.
+
+Þar skal búa til eftirfarandi notendur:
+
+Notendanafn | Lykilorð | Nafn | Netfang | Admin?
+------------|----------|------|---------|-------
+admin | `asdfasdf` | Admin | admin@example.org | Já
+nn | `12341234` | Nafnlaus | nn@example.org | Nei
+
+## Heroku
+
+Verkefnið skal keyra á Heroku með allri þeirri virkni sem hér er lýst ásamt prufugögnum.
 
 ## Umsóknarsíða
 
@@ -158,9 +143,9 @@ Notast skal við EJS template til að útbúa HTML.
 
 Setja skal upp villumeðhöndlun fyrir almennar villur og ef beðið er um slóð sem ekki er til (404). Skilaboð skulu birt notanda um hvað gerðist („Síða fannst ekki“ – „Villa kom upp“)..
 
-Öll dependency skulu skráð í package.json. eslint pakkar eru nú þegar uppsettir sem devDependency.
+Öll dependency skulu skráð í `package.json`. `eslint` pakkar eru nú þegar uppsettir sem devDependency.
 
-npm start skal keyra upp vefþjón á localhost porti 3000.
+`npm start` skal keyra upp vefþjón á localhost porti 3000.
 
 ## Git og GitHub
 
@@ -169,41 +154,93 @@ Verkefni þetta er sett fyrir á GitHub og almennt ætti að skila því úr ein
 Til að byrja er hægt að afrita þetta repo og bæta við á sínu eigin:
 
 ```bash
+# Verkefni 2
 > git clone https://github.com/vefforritun/vef2-2019-v2.git
 > cd vef2-2019-v2
 > git remote remove origin # fjarlægja remote sem verkefni er í
 > git remote add origin <slóð á repo> # bæta við í þínu repo
 > git push
+
+# Verkefni 3
+> git clone https://github.com/vefforritun/vef2-2019-v3.git
+> cd vef2-2019-v3
+> git remote remove origin # fjarlægja remote sem verkefni er í
+> git remote add origin <slóð á repo> # bæta við í þínu repo
+> git push
 ```
 
-## Mat
-
-* 10% – Snyrtilegur kóði, engar villur þegar `npm test` er keyrt
-* 10% – Skema fyrir gagnagrunn sett upp og leiðbeiningum fylgt um uppsetningu
-* 20% – Útlit uppsett eftir forskrift, merkingarfræðilegt HTML og snyrtilegt CSS
-* 30% – Umsóknarsíða tekur við umsókn, staðfestir (validate), hreinsar (sanitize) og vistar í grunni
-* 30% – Yfirlitssíða sýnir allar umsóknir, leyfir að merkja þær sem unnar og eyða þeim
-
-## Sett fyrir
-
-Verkefni sett fyrir á Uglu laugardaginn 26. janúar 2019.
-
-## Skil
-
-Skila skal undir „Verkefni og hlutaprófa“ á Uglu í seinasta lagi fyrir lok dags föstudaginn 8. febrúar 2019.
-
-Skilaboð skulu innihalda:
-
-* Slóð á GitHub repo fyrir verkefni, og dæmatímakennurum skal hafa verið boðið í repo (sjá leiðbeiningar). Notendanöfn þeirra eru `freyrdanielsson`, `gunkol`, `kth130`, `osk`
-
-## Einkunn
-
-Sett verða fyrir sex minni verkefni þar sem fimm bestu gilda 6% hvert, samtals 30% af lokaeinkunn.
-
-Sett verða fyrir tvö hópverkefni þar sem hvort um sig gildir 15%, samtals 30% af lokaeinkunn.
-
-Verkefnahluti gildir 60% og lokapróf gildir 40%. Ná verður *bæði* verkefnahluta og lokaprófi með lágmarkseinkunn 5.
+*Verkefnalýsingu frá kennara lýkur.*
 
 ---
 
-> Útgáfa 0.1
+## Glosur
+
+#### npm install skipanir sem voru keyrðar eftir að [grunnur](https://github.com/vefforritun/vef2-2019-v2) var sóttur:
+
+```bash
+npm install
+npm install --save pg express-validator ejs xss 
+npm install --save bcrypt cookie-parser express-session passport passport-local
+```
+
+#### Varðandi uppsetningu gagnagrunns
+
+_setup.js_ notar `connectionString = process.env.DATABASE_URL` sem er tómi strengurinn
+þar til annað hefur verið skráð. Tómi strengurinn er Default value sem er Notendanafn.
+
+Afritum texta úr _.env\_example_ í _.env_ og setjum upp eftir leiðbeiningum.
+
+Fylgja eftirfarandi [postgres ítarefni](https://github.com/vefforritun/vef2-2019/blob/master/itarefni/postgres.md).
+
+Keyrum `npm run setup` til að setja upp gagangrunn.
+
+Hægt að tengjast gagnagrunn í skel með `psql -U notandi -d v2` (local gagnagrunnur má hafa annað nafn).
+
+Erling lenti í smá veseni með að sýna íslenska stafi í PSQL, þurfti að keyra eftirfarandi í CMD:
+
+```bash
+SET PGCLIENTENCODING=utf-8
+chcp 65001
+```
+
+Setjum upp gagnagrunnstöflur í _schema.sql_.
+
+Búum til sýnigögn í _insert.sql_.
+
+#### Fyrstu skref sem voru tekin við smíði verkefnisins (skref fyrir skref)
+
+_Routers_ eru módúlar sem eru notaðir af aðal forritinu, _app.js_.
+
+Búum til _index.ejs_ skrá undir _/views_. Bætum inn form.
+
+Gott að geyma í _app.js_ stillingar á appi, villumeðhöndlanir, middleware o.fl.
+
+Bætum `app.use(apply);` í _app.js_. Búum til skránna _apply.js_ og importum hana í _app.js_.
+
+Template _index.ejs_ á ekki að sjá um neina lógík. Öll lógík fer fram í middleware, hér í _apply.js_.
+
+Bætum `app.use(express.urlencoded({ extended: true }));` í _app.js_ til að geta unnið með body-ið.
+
+Búum til _views/error.ejs_ til að geta birt error.
+
+Klárum register POST í _register.js_.
+
+Búum til validation og sanitazion fylki í _register.js_, því milliware getur verið hlaðið úr fylkjum eins og í fyrirlestri 3 Form, dæmi 09.
+
+Búum til þakkarsíðu _views/thanks.ejs_ samhliða register post úrvinnslu.
+
+Bætum við möguleika á að vista gögn í gagnagrunn eftir að þau hafa verið POST-uð.
+
+Þurfum `pg`, `connectionString` og `client` í _register.js_. 
+
+Útfærum það í _db.js_ og sækjum með `require`.
+
+---
+
+> Útgáfa 2.1
+
+| Útgáfa | Lýsing                                    |
+|--------|-------------------------------------------|
+| 1.0    | Verkefni 2                                |
+| 2.0    | Verkefni 3                                |
+| 2.1    | Hreinsað til og bætt við athugasemdum     |
