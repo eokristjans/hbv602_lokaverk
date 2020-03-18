@@ -1,3 +1,6 @@
+// Router fyrir applications.ejs
+// inniheldur föll til að birta allar atvinnuumsóknir, uppfæra og eyða.
+
 const express = require('express');
 
 // Viðbót til að geta sótt og breytt gögnum sem eru í gagnagrunninum.
@@ -6,18 +9,12 @@ const {
   updateApplicationSetProcessedEqualsTrue, 
   deleteApplication 
 } = require('../DAOs/db');
+const { 
+  catchErrors,
+  ensureAdmin,
+} = require('../DAOs/utils'); // v3
 
 const router = express.Router();
-
-/**
- * Higher-order fall sem umlykur async middleware með villumeðhöndlun.
- *
- * @param {function} fn Middleware sem grípa á villur fyrir
- * @returns {function} Middleware með villumeðhöndlun
- */
-function catchErrors(fn) {
-  return (req, res, next) => fn(req, res, next).catch(next);
-}
 
 /**
  * Ósamstilltur route handler fyrir umsóknarlista.
@@ -72,6 +69,6 @@ async function eydaUmsokn(req, res) {
 
 router.get('/', catchErrors(applications));
 router.post('/process', catchErrors(processApplication));
-router.post('/delete', catchErrors(eydaUmsokn));
+router.post('/delete', ensureAdmin, catchErrors(eydaUmsokn));
 
 module.exports = router;

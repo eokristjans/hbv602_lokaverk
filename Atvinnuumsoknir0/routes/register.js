@@ -1,3 +1,5 @@
+// Router fyrir register.ejs
+// inniheldur aðgerðir til að skrá notanda, birta form og þakkarsíðu.
 
 const express = require('express');
 const xss = require('xss');

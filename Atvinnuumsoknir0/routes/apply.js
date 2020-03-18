@@ -1,50 +1,20 @@
-// ÆTTI AÐ VERA TILBÚIÐ.
-//const util = require('util');
+// Router fyrir apply.ejs
+// inniheldur aðgerðir til að senda inn atvinnuumsóknir, birta form og þakkarsíðu.
+
 const express = require('express');
 const xss = require('xss');
 const { check, validationResult } = require('express-validator');
 const { sanitize } = require('express-validator');
 
-// Middleware til að vinna úr gögnum og ná í innihald þeirra.
-//const multer = require('multer');
-
-//const upload = util.promisify(multer({ dest: 'uploads/' }).single('file'));
-
 // Viðbót til að geta vistað gögn sem voru send inn í gagnagrunninn.
 // Sækjum bara insertApplication fallið.
 const { insertApplication } = require('../DAOs/db');
+const { 
+  catchErrors,
+  sanitizeXss,
+} = require('../DAOs/utils'); // v3
 
 const router = express.Router();
-
-/**
- * Higher-order fall sem umlykur async middleware með villumeðhöndlun.
- *
- * @param {function} fn Middleware sem grípa á villur fyrir
- * @returns {function} Middleware með villumeðhöndlun
- */
-function catchErrors(fn) {
-  return (req, res, next) => fn(req, res, next).catch(next);
-}
-
-/**
- * Hjálparfall sem XSS hreinsar reit í formi eftir heiti.
- *
- * @param {string} fieldName Heiti á reit
- * @returns {function} Middleware sem hreinsar reit ef hann finnst
- */
-function sanitizeXss(fieldName) {
-  return (req, res, next) => {
-    if (req.body) {
-      const field = req.body[fieldName];
-
-      if (field) {
-        req.body[fieldName] = xss(field);
-      }
-    }
-
-    next();
-  };
-}
 
 // Fylki af öllum validations fyrir umsókn
 const validations = [

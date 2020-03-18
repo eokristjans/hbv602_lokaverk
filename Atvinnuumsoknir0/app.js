@@ -1,6 +1,5 @@
 // v2 TILBÚIÐ.
-
-// TODO: Login Validation & Sanitazion
+// v3 TILBÚIÐ.
 
 require('dotenv').config();
 
