@@ -15,21 +15,14 @@ const express = require('express');
 // Viðbót til að geta sótt og breytt gögnum sem eru í gagnagrunninum.
 const {
   selectAllFromAppuserOrderById,
-  selectFromAppuser,
   updateAppuserAdminStatus,
 } = require('../DAOs/db');
+const { 
+  catchErrors,
+  ensureAdmin,
+} = require('../DAOs/utils'); // v3
 
 const router = express.Router();
-
-/**
- * Higher-order fall sem umlykur async middleware með villumeðhöndlun.
- *
- * @param {function} fn Middleware sem grípa á villur fyrir
- * @returns {function} Middleware með villumeðhöndlun
- */
-function catchErrors(fn) {
-  return (req, res, next) => fn(req, res, next).catch(next);
-}
 
 /**
  * Ósamstilltur route handler fyrir lista yfir notendur.
@@ -84,6 +77,6 @@ async function updateUsersAdminStatus(req, res) {
 
 
 router.get('/', catchErrors(users));
-router.post('/', catchErrors(updateUsersAdminStatus));
+router.post('/', ensureAdmin, catchErrors(updateUsersAdminStatus));
 
 module.exports = router;

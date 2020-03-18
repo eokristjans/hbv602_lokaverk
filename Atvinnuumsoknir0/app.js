@@ -2,7 +2,6 @@
 
 // TODO: Login Validation & Sanitazion
 
-
 require('dotenv').config();
 
 const {
@@ -25,6 +24,11 @@ const applications = require('./routes/applications');
 const register = require('./routes/register'); // v3
 const usersPage = require('./routes/users'); // v3
 const usersFunctions = require('./DAOs/users-functions'); // v3 - being used but not as middleware
+const { 
+  catchErrors,
+  ensureLoggedIn,
+  ensureNotLoggedIn,
+} = require('./DAOs/utils'); // v3
 
 
 const app = express();
@@ -81,7 +85,7 @@ async function strat(username, password, done) {
   }
 }
 
-// v3 Notum local strategy með „strattinu“ okkar til að leita að notanda
+// v3 Notum local strategy með „strat-inu“ okkar til að leita að notanda
 passport.use(new Strategy(strat));
 
 // v3 Geymum id á notanda í session, það er nóg til að vita hvaða notandi þetta er
@@ -103,10 +107,9 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// v3 Gott að skilgreina eitthvað svona til að gera user hlut aðgengilegan í
-// view-um ef við erum að nota þannig
+// v3 Gott að skilgreina eitthvað svona til að gera user hlut
+// aðgengilegan í view-um ef við erum að nota þannig
 app.use((req, res, next) => {
-
   // Látum `user` alltaf vera til fyrir view
   res.locals.user = req.isAuthenticated() ? req.user : null;
 
@@ -114,29 +117,7 @@ app.use((req, res, next) => {
 });
 
 
-/****************************** LOGIN & REGISTER ***************************/
-
-// v3 Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
-// þá áfram, annars sendir á /login
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  return res.redirect('/login');
-}
-
-// v3 Hjálpar middleware sem athugar hvort notandi sé innskráður
-// og sendir okkur þá á rót, annars hleypir okkur áfram
-// Notað t.d. áður en hleypt er á /register og /login síður
-function ensureNotLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    // Er útskráður
-    return res.redirect('/');
-  }
-
-  return next();
-}
+/****************************** LOGIN FUNCTIONALITY ***************************/
 
 /** v3
  * Login Form
