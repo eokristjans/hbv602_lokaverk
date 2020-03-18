@@ -53,8 +53,6 @@ async function findById(id) {
 
 async function createUser(nafn, netfang, username, password) {
 
-  console.log('Creating user with username: ' + username);
-
   // Hash the password, do not store the password any longer than necessary.
   await bcrypt.hash(password, saltRounds, function (err, hash) {
     // Store the user immediately.
