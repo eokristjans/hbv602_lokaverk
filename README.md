@@ -54,3 +54,6 @@ heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
 # Keyra setup á heroku
 heroku run node setup/setup.js
 ```
+
+Við munum svo endurtaka þetta fyrir Atvinnuumsoknir1, sem verður uppfært og betrumbætt útgáfa af Atvinnuumsoknir0.
+Það verður semsagt geymt á öðru Heroku remote.
