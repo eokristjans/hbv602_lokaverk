@@ -57,3 +57,51 @@ heroku run node setup/setup.js
 
 Við munum svo endurtaka þetta fyrir Atvinnuumsoknir1, sem verður uppfært og betrumbætt útgáfa af Atvinnuumsoknir0.
 Það verður semsagt geymt á öðru Heroku remote.
+
+```bash
+### Setting up development environment on Ubuntu VM
+
+# Install postgres
+sudo apt install postgresql postgresql-contrib
+
+# Connect to postgres as the default user, i.e. with username 'postgres'
+sudo -u postgres psql
+# Now you are connected, command line should say 'postgres=#'
+\du # shows all users
+CREATE USER notandi WITH ENCRYPTED PASSWORD 'lykilord'; # Creates a user (you should change the details)
+CREATE DATABASE v3; # Or whatever you want to call it (make sure to update your .env file appropriately)
+GRANT ALL PRIVILEGES ON DATABASE v3 TO notandi;
+\q # Quit psql CLI
+
+# if you wish to perform database queries on the CLI, you can reconnect using:
+psql -U notandi -d v3 # Should be prompted to insert your password, otherwise you're on your own (can be buggy)
+
+
+# Install nodejs and npm
+sudo apt install nodejs
+sudo apt install npm
+sudo apt upgrade npm
+
+# Now you can navigate to the webapp project folder and install packages
+npm install
+
+# Run setup and run the project locally
+npm run setup
+npm start
+
+## Install metasploit-framework
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+  chmod 755 msfinstall && \
+  ./msfinstall
+
+# Now you can run it using
+msfconsole
+
+# Following this guide : https://jonathansblog.co.uk/meatsploit-for-website-pentest
+# Load wmap plugin for exploiting webapps 
+load wmap
+
+# TODO: Continue following guide and perform some exploit with webapp running on localhost
+
+
+```
