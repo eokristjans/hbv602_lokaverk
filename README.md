@@ -73,6 +73,13 @@ CREATE DATABASE v3; # Or whatever you want to call it (make sure to update your 
 GRANT ALL PRIVILEGES ON DATABASE v3 TO notandi;
 \q # Quit psql CLI
 
+# before next step you might need to change pg_hba.conf file with line
+local   all   all       peer
+
+to
+
+local   all   all       md5
+
 # if you wish to perform database queries on the CLI, you can reconnect using:
 psql -U notandi -d v3 # Should be prompted to insert your password, otherwise you're on your own (can be buggy)
 
