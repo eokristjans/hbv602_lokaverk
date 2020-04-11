@@ -80,11 +80,11 @@ function registerForm(req, res) {
   const data = {
     // nafn samsvarar nafn í index.ejs
     title: 'Nýskráning',
-    nafn: 'Admin',
-    netfang: 'admin@example.org',
-    username: 'admin', // current default
-    password: 'asdfasdf', // current default
-    password2: 'asdfasdf', // current default
+    nafn: '',
+    netfang: '',
+    username: '', // current default
+    password: '', // current default
+    password2: '', // current default
     errors: [],
   };
   
