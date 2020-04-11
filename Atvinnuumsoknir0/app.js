@@ -36,14 +36,6 @@ const {
 
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-// Erum að vinna með form, verðum að nota body parser til að fá aðgang að req.body
-app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
-
 app.use(helmet()); // Security, set headers.
 // Sets "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload".
 const twoYearsInSeconds = 63072000;
@@ -54,8 +46,8 @@ app.use(helmet.hsts({
 }));
 
 // Redirects use to https connection and throws an error if users try to send data via http.
-// app.enable('trust proxy');
-// app.use(express_enforces_ssl()); // Does not work on localhost.
+app.enable('trust proxy');
+app.use(express_enforces_ssl()); // Does not work on localhost.
 
 /**
  * Middleware that sets HTTP header "Cache-Control: no-store, no-cache"
@@ -72,6 +64,14 @@ function nocache(req, res, next) {
   next();
 }
 app.use(nocache);
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// Erum að vinna með form, verðum að nota body parser til að fá aðgang að req.body
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
 
 /************************* PASSPORT & SESSION SETTINGS ************************/
 
