@@ -65,9 +65,10 @@ const sanitazions = [
   sanitize('password').trim().escape(),
   sanitizeXss('password'),
 
+  sanitize('password2').trim().escape(),
+  sanitizeXss('password2'),
+
 ];
-
-
 
 /**
  * Route handler fyrir form nýskráningar.
