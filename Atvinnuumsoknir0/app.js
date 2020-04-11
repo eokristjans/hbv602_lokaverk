@@ -46,8 +46,8 @@ app.use(helmet.hsts({
 }));
 
 // Redirects use to https connection and throws an error if users try to send data via http.
-app.enable('trust proxy');
-app.use(express_enforces_ssl()); // Does not work on localhost.
+// app.enable('trust proxy');
+// app.use(express_enforces_ssl()); // Does not work on localhost.
 
 /**
  * Middleware that sets HTTP header "Cache-Control: no-store, no-cache"
@@ -86,6 +86,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   maxAge: 30 * 24 * 60 * 1000, // 30 dagar
+  cookie: { secure: true }, // try to fix connect.sid cookie security issue
 }));
 
 /** v3
