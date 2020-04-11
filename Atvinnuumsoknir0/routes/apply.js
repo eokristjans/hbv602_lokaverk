@@ -2,14 +2,13 @@
 // inniheldur aðgerðir til að senda inn atvinnuumsóknir, birta form og þakkarsíðu.
 
 const express = require('express');
-const xss = require('xss');
 const { check, validationResult } = require('express-validator');
 const { sanitize } = require('express-validator');
 
 // Viðbót til að geta vistað gögn sem voru send inn í gagnagrunninn.
 // Sækjum bara insertApplication fallið.
 const { insertApplication } = require('../DAOs/db');
-const { 
+const {
   catchErrors,
   sanitizeXss,
 } = require('../DAOs/utils'); // v3
