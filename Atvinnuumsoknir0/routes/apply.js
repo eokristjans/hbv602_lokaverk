@@ -75,14 +75,14 @@ function form(req, res) {
   const data = {
     // nafn samsvarar nafn í index.ejs
     title: 'Atvinnuumsókn',
-    nafn: 'default apply.js form',
-    netfang: 'default@apply.js',
-    simi: '1234567',
-    kynning: 'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop',
-    starf: 'forritari',
-    errors: [],
+    nafn: '', // 'default apply.js form',
+    netfang: '', // 'default@apply.js',
+    simi: '', // '1234567',
+    kynning: '', // 'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop',
+    starf: '', // 'forritari',
+    errors: [], // [],
   };
-  
+
   // setjum current page (betra ef þetta væri aðgerð aðgengileg öllum)
   res.locals.page = 'apply';
 
