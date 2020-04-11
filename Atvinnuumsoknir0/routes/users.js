@@ -63,11 +63,11 @@ async function updateUsersAdminStatus(req, res) {
 
   // Iterate through the list and of all users and set admin status accordingly
   const list = await selectAllFromAppuserOrderById();
-  await list.forEach(currentUser => {
-    if (admin.includes(currentUser.id.toString()) && currentUser.admin != true) {
+  await list.forEach((currentUser) => {
+    if (admin.includes(currentUser.id.toString()) && currentUser.admin !== true) {
       updateAppuserAdminStatus(currentUser.id, true);
     }
-    else if (currentUser.admin == true && !admin.includes(currentUser.id.toString())) {
+    else if (currentUser.admin === true && !admin.includes(currentUser.id.toString())) {
       updateAppuserAdminStatus(currentUser.id, false);
     }
   });
