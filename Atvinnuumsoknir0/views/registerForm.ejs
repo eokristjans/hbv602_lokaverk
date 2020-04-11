@@ -3,7 +3,7 @@
 
 <h1><%= title %></h1>
 
-<form method="post" action="/register">
+<form method="post" action="/register" autocomplete="off">
   
 <div class="field<%= locals.isInvalid('nafn', errors) ?  ' field--invalid' : '' %>">
     <label for="nafn">Nafn</label>

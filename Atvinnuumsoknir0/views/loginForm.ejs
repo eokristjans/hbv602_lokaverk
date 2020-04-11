@@ -3,7 +3,7 @@
 
 <h1><%= title %></h1>
 
-<form method="post" action="/login">
+<form method="post" action="/login" autocomplete="off">
 <!-- REITIRNIR VERÐA AÐ HEITA username OG password SVO passport.authenticate VIRKI.-->
   
   <div class="field<%= (locals.isInvalid('password', errors) || message)  ?  ' field--invalid' : '' %>">
