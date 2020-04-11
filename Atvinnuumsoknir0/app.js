@@ -15,6 +15,7 @@ const express = require('express');
 const { sanitize } = require('express-validator');
 const session = require('express-session'); // v3
 const passport = require('passport'); // v3
+const helmet = require('helmet'); // http hausar
 
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
@@ -24,7 +25,7 @@ const applications = require('./routes/applications');
 const register = require('./routes/register'); // v3
 const usersPage = require('./routes/users'); // v3
 const usersFunctions = require('./DAOs/users-functions'); // v3 - being used but not as middleware
-const { 
+const {
   catchErrors,
   ensureLoggedIn,
   ensureNotLoggedIn,
@@ -42,6 +43,30 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
 
+app.use(helmet()); // Security, set headers.
+// Sets "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload".
+const twoYearsInSeconds = 63072000;
+app.use(helmet.hsts({
+  maxAge: twoYearsInSeconds,
+  includeSubDomains: true,
+  preload: true,
+}));
+
+/**
+ * Middleware that sets HTTP header "Cache-Control: no-store, no-cache"
+ * and "Pragma: no-cache".
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ * @param {function} next
+ */
+function nocache(req, res, next) {
+  res.setHeader('Surrogate-Control', 'no-store');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+}
+app.use(nocache);
 
 /************************* PASSPORT & SESSION SETTINGS ************************/
 
@@ -133,7 +158,7 @@ const sanitazions = [
 
 /** v3
  * Login Form
- * 
+ *
  * @param {object} req Request hlutur
  * @param {object} res Response hlutur
  */
@@ -154,7 +179,7 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
     username: '', // current default
     password: '', // current default
     errors: [],
-    message: message,
+    message,
   };
 
   return res.render('loginForm', data);
@@ -163,14 +188,14 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
 
 /** v3
  * Login Post Method (Mun þurfa að verða Async vegna samskipta við gagnagrunn)
- * 
+ *
  * @param {object} req Request hlutur
  * @param {object} res Response hlutur
  */
 app.post(
-  '/login', 
+  '/login',
   ensureNotLoggedIn,
-  
+
   // Þetta notar strat að ofan til að skrá notanda inn
   passport.authenticate('local', {
     failureMessage: 'Notandi eða lykilorð vitlaust.',
@@ -186,13 +211,13 @@ app.post(
 
 /** v3
  * Log out Method
- * 
+ *
  * @param {object} req Request hlutur
  * @param {object} res Response hlutur
  */
 app.get(
-  '/logout', 
-  ensureLoggedIn, 
+  '/logout',
+  ensureLoggedIn,
   (req, res) => {
     req.logout(); // Passport method
     res.redirect('/');
@@ -234,8 +259,6 @@ function errorHandler(error, req, res, next) { // eslint-disable-line
 
 app.use(notFoundHandler);
 app.use(errorHandler);
-
-
 
 /********** LISTEN MUST BE AT THE ABSOLUTE BOTTOM **********/
 
