@@ -151,8 +151,8 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
 
   const data = {
     title: 'Innskráning', // Ekki í notkun eins og er
-    username: 'admin', // current default
-    password: 'asdfasdf', // current default
+    username: '', // current default
+    password: '', // current default
     errors: [],
     message: message,
   };
