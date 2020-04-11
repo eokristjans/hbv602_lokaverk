@@ -16,6 +16,7 @@ const { sanitize } = require('express-validator');
 const session = require('express-session'); // v3
 const passport = require('passport'); // v3
 const helmet = require('helmet'); // http hausar
+const express_enforces_ssl = require('express-enforces-ssl');
 
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
@@ -51,6 +52,10 @@ app.use(helmet.hsts({
   includeSubDomains: true,
   preload: true,
 }));
+
+// Redirects use to https connection and throws an error if users try to send data via http.
+app.enable('trust proxy');
+app.use(express_enforces_ssl()); // Does not work on localhost.
 
 /**
  * Middleware that sets HTTP header "Cache-Control: no-store, no-cache"
