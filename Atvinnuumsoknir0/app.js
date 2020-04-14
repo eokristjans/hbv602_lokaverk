@@ -48,10 +48,13 @@ app.use(helmet.hsts({
 }));
 
 if (hostname !== 'localhost') { // Does not work on localhost.
-  console.log('Setting expressEnforcesSSL');
   // Redirects use to https connection and throws an error if users try to send data via http.
   app.enable('trust proxy');
-  app.use(expressEnforcesSSL()); 
+  app.use(expressEnforcesSSL());
+
+  // Does not work on localhost unless you have redis-server running
+  // Limits the number of requests made per duration by IP
+  app.use(rateLimiterRedisMiddleware);
 }
 
 /**
@@ -70,7 +73,6 @@ function nocache(req, res, next) {
 }
 
 app.use(nocache);
-app.use(rateLimiterRedisMiddleware);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
