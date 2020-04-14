@@ -56,9 +56,15 @@ heroku run node setup/setup.js
 ```
 
 
-## Setting up redis (noSQL) for caching
+## Setting up redis (noSQL) for caching (not easily available on Windows)
 
+```bash
+# Install on Linux
+sudo apt install redis-server
 
+# Run server with default config
+redis-server
+```
 
 
 ## Setting up a development environment on Ubuntu VM

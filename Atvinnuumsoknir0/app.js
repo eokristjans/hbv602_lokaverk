@@ -17,9 +17,6 @@ const session = require('express-session'); // v3
 const passport = require('passport'); // v3
 const helmet = require('helmet'); // http headers for security
 
-const redis = require('redis');
-const RedisStore = require('connect-redis')(session);
-
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
 
@@ -50,10 +47,11 @@ app.use(helmet.hsts({
   preload: true,
 }));
 
-if (hostname !== 'localhost') {
+if (hostname !== 'localhost') { // Does not work on localhost.
+  console.log('Setting expressEnforcesSSL');
   // Redirects use to https connection and throws an error if users try to send data via http.
   app.enable('trust proxy');
-  app.use(expressEnforcesSSL()); // Does not work on localhost.
+  app.use(expressEnforcesSSL()); 
 }
 
 /**
@@ -89,19 +87,13 @@ if (!sessionSecret) { // v3
 }
 
 
-const redisClient = redis.createClient({
-  url: 'redis://127.0.0.1:6379/0',
-  enable_offline_queue: false,
-});
-
 // v3 Passport mun verða notað með session
 app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   maxAge: 30 * 24 * 60 * 1000, // 30 dagar
-  store: new RedisStore(redisClient),
-  cookie: { secure: true }, // try to fix connect.sid cookie security issue
+  // cookie: { secure: true }, // try to fix connect.sid cookie security issue
 }));
 
 /** v3
