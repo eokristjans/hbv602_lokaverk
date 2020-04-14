@@ -24,6 +24,8 @@ Atvinnuumsoknir0/.env
 
 dist/
 
+redis-5.0.8/
+
 
 # Was messing around with uploading files in v2
 **/uploads
