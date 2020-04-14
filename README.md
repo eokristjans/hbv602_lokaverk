@@ -55,8 +55,13 @@ heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
 heroku run node setup/setup.js
 ```
 
-Við munum svo endurtaka þetta fyrir Atvinnuumsoknir1, sem verður uppfært og betrumbætt útgáfa af Atvinnuumsoknir0.
-Það verður semsagt geymt á öðru Heroku remote.
+
+## Setting up redis (noSQL) for caching
+
+
+
+
+## Setting up a development environment on Ubuntu VM
 
 ```bash
 ### Setting up development environment on Ubuntu VM

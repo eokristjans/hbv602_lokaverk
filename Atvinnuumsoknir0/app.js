@@ -15,11 +15,16 @@ const express = require('express');
 const { sanitize } = require('express-validator');
 const session = require('express-session'); // v3
 const passport = require('passport'); // v3
-const helmet = require('helmet'); // http hausar
-const express_enforces_ssl = require('express-enforces-ssl');
+const helmet = require('helmet'); // http headers for security
+
+const redis = require('redis');
+const RedisStore = require('connect-redis')(session);
 
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
+
+const expressEnforcesSSL = require('express-enforces-ssl'); // enforce ssl for security
+const rateLimiterRedisMiddleware = require('./middleware/rateLimiterRedis'); // limit # of loggins attempts
 
 const apply = require('./routes/apply');
 const applications = require('./routes/applications');
@@ -45,9 +50,11 @@ app.use(helmet.hsts({
   preload: true,
 }));
 
-// Redirects use to https connection and throws an error if users try to send data via http.
-app.enable('trust proxy');
-app.use(express_enforces_ssl()); // Does not work on localhost.
+if (hostname !== 'localhost') {
+  // Redirects use to https connection and throws an error if users try to send data via http.
+  app.enable('trust proxy');
+  app.use(expressEnforcesSSL()); // Does not work on localhost.
+}
 
 /**
  * Middleware that sets HTTP header "Cache-Control: no-store, no-cache"
@@ -63,14 +70,15 @@ function nocache(req, res, next) {
   res.setHeader('Expires', '0');
   next();
 }
+
 app.use(nocache);
+app.use(rateLimiterRedisMiddleware);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Erum að vinna með form, verðum að nota body parser til að fá aðgang að req.body
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
 
 /************************* PASSPORT & SESSION SETTINGS ************************/
@@ -80,12 +88,19 @@ if (!sessionSecret) { // v3
   process.exit(1);
 }
 
+
+const redisClient = redis.createClient({
+  url: 'redis://127.0.0.1:6379/0',
+  enable_offline_queue: false,
+});
+
 // v3 Passport mun verða notað með session
 app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   maxAge: 30 * 24 * 60 * 1000, // 30 dagar
+  store: new RedisStore(redisClient),
   cookie: { secure: true }, // try to fix connect.sid cookie security issue
 }));
 
