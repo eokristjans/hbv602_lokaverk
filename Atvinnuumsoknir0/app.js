@@ -17,6 +17,9 @@ const session = require('express-session'); // v3
 const passport = require('passport'); // v3
 const helmet = require('helmet'); // http headers for security
 
+// for logging
+const morgan = require('morgan');
+
 // Strategy um hvernig við ætlum að nálgast og eiga við notendur
 const { Strategy } = require('passport-local'); // v3
 
@@ -75,6 +78,10 @@ function nocache(req, res, next) {
 
 app.use(nocache);
 
+const morganFormat = ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" ":response-time ms';
+app.use(morgan(morganFormat, {
+  skip: req => req.url.includes('styles.css'),
+}));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
