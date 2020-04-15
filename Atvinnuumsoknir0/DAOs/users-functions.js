@@ -1,6 +1,6 @@
 /* v3 - Hjálparföll um notendur og meðhöndlun þeirra */
 
-
+const bcrypt = require('bcryptjs');
 
 // Viðbót til að geta vistað gögn sem voru send inn í gagnagrunninn.
 // Sækjum bara insertApplication fallið.
@@ -8,16 +8,17 @@ const {
   insertAppuser,
   selectFromAppuser,
   selectFromAppuserWhereUsernameEquals,
-  selectAllFromAppuserOrderById,
-  updateAppuserAdminStatus,
 } = require('./db');
 
-const bcrypt = require('bcryptjs');
-const saltRounds = 10;
+const saltRounds = 12;
 
+const {
+  // Sækir upplýsingar í .env
+  PEPPER: pepper,
+} = process.env;
 
 async function comparePasswords(password, user) {
-  const ok = await bcrypt.compare(password, user.password);
+  const ok = await bcrypt.compare(password + pepper, user.password);
 
   if (ok) {
     return user;
@@ -26,9 +27,6 @@ async function comparePasswords(password, user) {
   return false;
 }
 
-/***************************************************************
- * Þessu þyrfti þá að breyta til að sækja notendur í gagnagrunn.
- ***************************************************************/
 async function findByUsername(username) {
   const list = await selectFromAppuserWhereUsernameEquals(username);
 
@@ -52,9 +50,8 @@ async function findById(id) {
 }
 
 async function createUser(nafn, netfang, username, password) {
-
   // Hash the password, do not store the password any longer than necessary.
-  await bcrypt.hash(password, saltRounds, function (err, hash) {
+  await bcrypt.hash(password + pepper, saltRounds, function (err, hash) {
     // Store the user immediately.
     insertAppuser(nafn, netfang, username, hash, false);
   });

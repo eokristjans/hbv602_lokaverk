@@ -34,14 +34,8 @@ INSERT INTO application (nafn, netfang, simi, kynning, starf, processed) VALUES
   , 'verkefnastjóri'
   , False);
 INSERT INTO appuser (nafn, netfang, username, password, admin) VALUES 
-  ( 'Admin'
-  , 'admin@example.org'
-  , 'admin'
-  , '$2b$10$N0R0DphxTZfCaN3n3882VuZ5DlOkijtezdtSCbKSUDZcFt98N8n56'
+  ( 'Erling'
+  , 'erling@example.org'
+  , 'erling'
+  , '$2y$12$99zc3RLpTsCTsXDxdZS77eYpvQnhzWiI45r6cmuE0ZhoFYkIwScvq'
   , true);
-INSERT INTO appuser (nafn, netfang, username, password, admin) VALUES 
-  ( 'Nafnlaus'
-  , 'nn@example.org'
-  , 'nn'
-  , '$2b$10$VovxIJixUY9CnuFWxEUG9.L49jTMpDys/M7ErUz7uYUhV3QYF0N/S'
-  , false);

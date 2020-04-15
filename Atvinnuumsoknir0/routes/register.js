@@ -42,10 +42,12 @@ const validations = [
     .withMessage('Notendanafn má ekki vera tómt.'),
 
   check('username')
+    // eslint-disable-next-line consistent-return
     .custom(async (value) => {
       // Check if username is in use
       const user = await usersFunctions.findByUsername(value);
-      if (user != null) return Promise.reject('Notendanafn er þegar í notkun.');;
+      // eslint-disable-next-line prefer-promise-reject-errors
+      if (user != null) return Promise.reject('Notendanafn er þegar í notkun.'); ; // eslint-disable-line no-extra-semi
     }),
 
   check('password')
@@ -183,7 +185,9 @@ async function formPost(req, res) {
   } = req;
 
   await usersFunctions.createUser(nafn, netfang, username, password);
-  
+
+  delete req.password; // delete password from memory
+
   return res.redirect('/register/thanks');
 }
 
