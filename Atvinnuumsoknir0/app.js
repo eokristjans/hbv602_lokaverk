@@ -21,7 +21,7 @@ const helmet = require('helmet'); // http headers for security
 const { Strategy } = require('passport-local'); // v3
 
 const expressEnforcesSSL = require('express-enforces-ssl'); // enforce ssl for security
-const rateLimiterRedisMiddleware = require('./middleware/rateLimiterRedis'); // limit # of loggins attempts
+const rateLimiterRedisMiddleware = require('./middleware/rateLimiterRedis'); // limit # of requests per user
 
 const apply = require('./routes/apply');
 const applications = require('./routes/applications');
@@ -29,7 +29,6 @@ const register = require('./routes/register'); // v3
 const usersPage = require('./routes/users'); // v3
 const usersFunctions = require('./DAOs/users-functions'); // v3 - being used but not as middleware
 const {
-  catchErrors,
   ensureLoggedIn,
   ensureNotLoggedIn,
   sanitizeXss,
@@ -39,6 +38,7 @@ const {
 const app = express();
 
 app.use(helmet()); // Security, set headers.
+
 // Sets "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload".
 const twoYearsInSeconds = 63072000;
 app.use(helmet.hsts({
@@ -47,7 +47,8 @@ app.use(helmet.hsts({
   preload: true,
 }));
 
-if (hostname !== 'localhost') { // Does not work on localhost.
+// Does not work on localhost
+if (hostname !== 'localhost') { // app.get('env') === 'production'
   // Redirects use to https connection and throws an error if users try to send data via http.
   app.enable('trust proxy');
   app.use(expressEnforcesSSL());
@@ -74,6 +75,7 @@ function nocache(req, res, next) {
 
 app.use(nocache);
 
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -81,7 +83,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Inniheldur m.a. styles.css
 
-/************************* PASSPORT & SESSION SETTINGS ************************/
+// ************************* PASSPORT & SESSION SETTINGS ************************
 
 if (!sessionSecret) { // v3
   console.error('Add SESSION_SECRET to .env');
@@ -157,8 +159,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
-/****************************** LOGIN FUNCTIONALITY ***************************/
+// ****************************** LOGIN FUNCTIONALITY ***************************
 
 // Fylki af öllum hreinsunum fyrir innskráningu notenda
 const sanitazions = [
@@ -178,7 +179,6 @@ const sanitazions = [
  * @param {object} res Response hlutur
  */
 app.get('/login', ensureNotLoggedIn, (req, res) => {
-
   // v3 setjum current page (betra væri ef þetta væri aðgerð aðgengileg öllum)
   res.locals.page = 'login';
 
@@ -240,7 +240,7 @@ app.get(
 );
 
 
-/******************** USE IMPORTED ROUTERS ********************/
+// ******************** USE IMPORTED ROUTERS ********************
 
 app.use('/', apply);
 app.use('/register', ensureNotLoggedIn, register); // v3
@@ -248,7 +248,7 @@ app.use('/applications', ensureLoggedIn, applications);
 app.use('/users', ensureLoggedIn, usersPage); // v3
 
 
-/********** ERROR HANDLING MUST BE BELOW OTHER MIDDLEWARE **********/
+// ********** ERROR HANDLING MUST BE BELOW OTHER MIDDLEWARE **********
 
 /**
  * Hjálparfall til að athuga hvort reitur sé gildur eða ekki.
@@ -264,6 +264,7 @@ function isInvalid(field, errors) {
 app.locals.isInvalid = isInvalid;
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
+
   res.status(404).render('error', { title: '404', error: '404 fannst ekki' });
 }
 
@@ -275,7 +276,7 @@ function errorHandler(error, req, res, next) { // eslint-disable-line
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-/********** LISTEN MUST BE AT THE ABSOLUTE BOTTOM **********/
+// ********** LISTEN MUST BE AT THE ABSOLUTE BOTTOM **********
 
 app.listen(port, () => {
   // Does not listen on any specific hostname on heroku.
