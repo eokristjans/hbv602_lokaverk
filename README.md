@@ -17,7 +17,7 @@
 
 ## Verkefnislýsing
 
-Við byrjum með vefsíðu sem nemandi smíðaði í námskeiðinu Vefforritun 2. Vefsíðan er forrituð í JavaScript með Express pakkanum og server-side rendering. Upprunalega útgáfa vefsíðunnar er í möppunni *Atvinnuumsoknir0*. Til að keyra hana locally þarf að hafa sett upp NodeJS og þá er hægt að keyra `npm install` á skipanalínu, keyra `npm run setup` til að setja upp gagnagrunn og svo `npm start` til að keyra síðunna á [127.0.0.1:3000](http://127.0.0.1:3000). Vefsíðan er hýst á Heroku - upprunalega útgáfan er [hér](https://vef2-v3-eok4.herokuapp.com/).
+Við byrjum með vefsíðu sem nemandi smíðaði í námskeiðinu Vefforritun 2. Vefsíðan er forrituð í JavaScript með Express pakkanum og server-side rendering. Upprunalega útgáfa vefsíðunnar er í möppunni *Atvinnuumsoknir0*. Til að keyra hana locally þarf að hafa sett upp NodeJS og þá er hægt að keyra `npm install` á skipanalínu, keyra `npm run setup` til að setja upp gagnagrunn og svo `npm start` til að keyra síðunna á [127.0.0.1:3000](http://127.0.0.1:3000). Vefsíðan er hýst á [Heroku](https://vef2-v3-eok4.herokuapp.com/).
 
 Vefsíðan er umsóknarvefur fyrir starf hjá ónefndu fyrirtæki. Hver sem er getur sótt um starf með því að fylla út í form á umsóknarsíðu og senda inn umsóknina.
 
@@ -28,7 +28,7 @@ Upprunalega útgáfa vefsíðunnar inniheldur einhverjar varnir eins og hreinsun
 <hr>
 
 
-## Heroku stillingar og glósur
+## Setting up Heroku and deploying project
 
 ```bash
 # Set up Heroku (globally)
@@ -49,11 +49,11 @@ git subtree push --prefix Atvinnuumsoknir0 heroku master
 # Setja upp gagnagrunn á heroku
 heroku addons:create heroku-postgresql:hobby-dev -a vef2-v3-eok4
 
-# TODO: Halda utan um logging til lengri tíma með heroku resource: Papertrail
-
 # Keyra setup á heroku
 heroku run node setup/setup.js
 ```
+
+Use Papertrail for logging and Heroku-Redis for caching.
 
 
 ## Setting up redis (noSQL) for caching (not easily available on Windows)
@@ -119,7 +119,6 @@ msfconsole
 # Load wmap plugin for exploiting webapps 
 load wmap
 
-# TODO: Continue following guide and perform some exploit with webapp running on localhost
-
+# Run exploits...
 
 ```
