@@ -8,6 +8,7 @@ const {
   HOST: hostname = '127.0.0.1',
   PORT: port = 3000,
   SESSION_SECRET: sessionSecret = 'leyndó',
+  ENVIRONMENT: env = 'production',
 } = process.env;
 
 const path = require('path');
@@ -35,7 +36,7 @@ const {
   ensureLoggedIn,
   ensureNotLoggedIn,
   sanitizeXss,
-} = require('./DAOs/utils'); // v3
+} = require('./utils/utils'); // v3
 
 
 const app = express();
@@ -50,8 +51,8 @@ app.use(helmet.hsts({
   preload: true,
 }));
 
-// Does not work on localhost
-if (hostname !== 'localhost') { // app.get('env') === 'production'
+// These settings do not work on localhost
+if (env === 'production') {
   // Redirects use to https connection and throws an error if users try to send data via http.
   app.enable('trust proxy');
   app.use(expressEnforcesSSL());
@@ -176,7 +177,6 @@ const sanitazions = [
 
   sanitize('password').escape(),
   sanitizeXss('password'),
-
 ];
 
 /** v3
@@ -217,6 +217,7 @@ app.get('/login', ensureNotLoggedIn, (req, res) => {
 app.post(
   '/login',
   ensureNotLoggedIn,
+  sanitazions, // Hreinsa gögn svo þau verði eins og þau sem notandi skráði sig með
 
   // Þetta notar strat að ofan til að skrá notanda inn
   passport.authenticate('local', {

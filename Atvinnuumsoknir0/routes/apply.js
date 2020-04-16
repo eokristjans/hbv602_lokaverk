@@ -11,7 +11,7 @@ const { insertApplication } = require('../DAOs/db');
 const {
   catchErrors,
   sanitizeXss,
-} = require('../DAOs/utils'); // v3
+} = require('../utils/utils'); // v3
 
 const router = express.Router();
 

@@ -9,7 +9,7 @@ const usersFunctions = require('../DAOs/users-functions'); // v3 - being used bu
 const {
   catchErrors,
   sanitizeXss,
-} = require('../DAOs/utils'); // v3 - being used but not as middleware
+} = require('../utils/utils'); // v3 - being used but not as middleware
 
 
 // import 500 worst passwords

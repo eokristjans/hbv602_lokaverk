@@ -27,7 +27,7 @@ async function query(q, values = []) {
   }
 }
 
-/********************** APPLICATION CRUD **********************/
+// ********************** APPLICATION CRUD **********************
 
 /**
  * Bætir við umsókn.
@@ -84,9 +84,7 @@ async function deleteApplication(id) {
 }
 
 
-
-/********************** APPUSER CRUD **********************/
-
+// ********************* APPUSER CRUD **********************
 
 /**
  * Bætir við user.
@@ -166,7 +164,6 @@ async function deleteAppuser(id) {
 
   return query(q, [id]);
 }
-
 
 
 module.exports = {

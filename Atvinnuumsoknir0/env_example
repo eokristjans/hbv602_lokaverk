@@ -5,3 +5,4 @@ PORT=7777
 DATABASE_URL=postgres://<notandi>:<lykilord>@localhost/<db-nafn>
 SESSION_SECRET=<leyndarmal>
 PEPPER=<piparstrengur>
+ENVIRONMENT=development
